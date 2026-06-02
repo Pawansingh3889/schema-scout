@@ -53,6 +53,14 @@ def _run_pipeline(catalog, conn, args) -> None:
         )
         print(f"  profiled {len(done)} tables (sample {args.sample_size:,} rows)")
 
+    if conn is not None and (args.exact or args.exact_keys):
+        keys_only = args.exact_keys and not args.exact
+        done = profile.profile_catalog_exact(
+            conn, catalog, limit=args.profile_limit, keys_only=keys_only
+        )
+        scope = "key columns" if keys_only else "all columns"
+        print(f"  exact-profiled {len(done)} tables ({scope}, full row counts)")
+
     flagged = classify.annotate_pii(catalog)
     summary = classify.classify_catalog(catalog)
     print(f"  classified: {summary}")
@@ -94,6 +102,16 @@ def _add_common(p):
     p.add_argument("--profile", action="store_true", help="sample-profile top tables")
     p.add_argument("--profile-limit", type=int, default=25)
     p.add_argument("--sample-size", type=int, default=50000)
+    p.add_argument(
+        "--exact-keys",
+        action="store_true",
+        help="exact (full-table) profile of key-like columns, to confirm PKs",
+    )
+    p.add_argument(
+        "--exact",
+        action="store_true",
+        help="exact (full-table) profile of all aggregatable columns (heavy)",
+    )
     p.add_argument("--validate", action="store_true", help="confirm inferred FKs by value inclusion")
     p.add_argument("--describe", action="store_true", help="AI descriptions via Ollama")
     p.add_argument("--describe-limit", type=int, default=25)
@@ -124,8 +142,10 @@ def main(argv=None) -> int:
 
         print("schema-scout demo (synthetic catalog, no database)")
         catalog = build_demo_catalog()
-        # demo has no live connection, so validate/profile/describe are skipped
+        # demo has no live connection, so profiling/validate/describe are skipped
         args.profile = False
+        args.exact = False
+        args.exact_keys = False
         args.validate = False
         args.describe = False
         _run_pipeline(catalog, None, args)
