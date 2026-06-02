@@ -90,15 +90,32 @@ def to_markdown(catalog: Catalog) -> str:
     )
     out.append("")
 
+    # subject areas (domains) — the focus-decision rollup
+    if any(t.subject_area for t in catalog.tables):
+        dom: dict = {}
+        for t in catalog.tables:
+            key = t.subject_area or "Ungrouped"
+            d = dom.setdefault(key, {"tables": 0, "rows": 0, "pii": 0})
+            d["tables"] += 1
+            d["rows"] += t.row_count
+            d["pii"] += sum(1 for c in t.columns if c.is_pii)
+        out.append("## Subject areas")
+        out.append("")
+        out.append("| Domain | Tables | Rows | PII cols |")
+        out.append("|---|--:|--:|--:|")
+        for name, d in sorted(dom.items(), key=lambda kv: kv[1]["rows"], reverse=True):
+            out.append(f"| {name} | {d['tables']} | {d['rows']:,} | {d['pii']} |")
+        out.append("")
+
     # overview
     out.append("## Tables by size")
     out.append("")
-    out.append("| Table | Kind | Rows | Cols | FKs | PK |")
-    out.append("|---|---|--:|--:|--:|---|")
+    out.append("| Table | Domain | Kind | Rows | Cols | FKs | PK |")
+    out.append("|---|---|---|--:|--:|--:|---|")
     for t in tables:
         out.append(
-            f"| `{t.qualified_name}` | {t.kind} | {t.row_count:,} | "
-            f"{t.column_count} | {len(t.foreign_keys)} | "
+            f"| `{t.qualified_name}` | {t.subject_area or '—'} | {t.kind} | "
+            f"{t.row_count:,} | {t.column_count} | {len(t.foreign_keys)} | "
             f"{', '.join(t.primary_key) or '—'} |"
         )
     out.append("")
