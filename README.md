@@ -24,8 +24,11 @@ The work is split into stages so each one scales on its own:
 
 Row counts come from partition statistics, not `COUNT(*)`, so the structure
 pass is instant no matter how big the tables are. Profiling is the only stage
-that reads data, it's sample-based, and by default it only touches the ~25
-highest-value tables (most rows, most referenced) instead of all 150.
+that reads data, it's sample-based by default, and it only touches the ~25
+highest-value tables (most rows, most referenced) instead of all 150. When you
+need certainty rather than an estimate — for example to confirm a column is
+actually unique before trusting it as a key — `--exact-keys` runs full-table
+aggregates instead of sampling.
 
 ## Why the inference matters
 
@@ -86,6 +89,8 @@ Output lands in `out/`:
 ### Useful flags
 
 - `--profile` / `--profile-limit N` / `--sample-size N` — sampled profiling of the top N tables
+- `--exact-keys` — exact (full-table) profile of key-like columns to confirm primary keys; sampled distinct counts are estimates, this isn't
+- `--exact` — exact profile of every aggregatable column (heavier; use on a single table or a small `--profile-limit`)
 - `--validate` — confirm inferred FKs against real values
 - `--no-infer` — structure only, no relationship guessing
 - `--min-confidence X` — drop inferred FKs below this confidence
