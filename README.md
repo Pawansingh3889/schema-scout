@@ -82,9 +82,25 @@ python -m schema_scout.cli run
 
 Output lands in `out/`:
 
+- `catalog.html` — a self-contained dashboard (see below); double-click to open
 - `catalog.json` — the machine-readable catalog
-- `catalog.md` — the human catalog (tables by size, PII list, per-table detail)
+- `catalog.md` — the human catalog (subject areas, tables by size, PII list, per-table detail)
 - `erd.mmd` — a Mermaid ER diagram (scoped to the biggest tables so it stays readable; raise `--erd-tables` or scope it yourself)
+
+## The dashboard
+
+`catalog.html` is a single file with the data embedded and no external
+resources — no server, no CDN, no network — so you can hand it to someone and
+they just open it. It's built for deciding **where to focus**: it groups the
+tables into subject areas (domains) and lets you rank those domains by data
+volume, PII exposure, number of tables, or modelling debt (undeclared foreign
+keys). Click a domain to filter; search and drill into any table to see its
+columns, profile stats and relationships.
+
+Domains are detected automatically: by table-name prefix when the schema uses
+module prefixes (`SalesOrder`, `SalesOrderLine`, …), or by foreign-key
+connectivity otherwise. Force one with `--domains prefix|components`. Like the
+classification, it's a heuristic starting point — rename or merge as needed.
 
 ### Useful flags
 
@@ -96,6 +112,7 @@ Output lands in `out/`:
 - `--min-confidence X` — drop inferred FKs below this confidence
 - `--describe` / `--model` / `--ollama-host` — local-LLM descriptions via Ollama
 - `--erd-tables N` — how many tables to draw in the diagram
+- `--domains auto|prefix|components` — how to group tables into subject areas
 
 ## Read-only, on purpose
 
