@@ -21,7 +21,16 @@ import argparse
 import os
 import sys
 
-from schema_scout import classify, extract, profile, relationships, render, semantic
+from schema_scout import (
+    classify,
+    domains,
+    extract,
+    htmlreport,
+    profile,
+    relationships,
+    render,
+    semantic,
+)
 
 
 def _write(outdir: str, name: str, content: str) -> str:
@@ -66,6 +75,9 @@ def _run_pipeline(catalog, conn, args) -> None:
     print(f"  classified: {summary}")
     print(f"  PII columns flagged: {flagged}")
 
+    assign = domains.infer_domains(catalog, strategy=args.domains)
+    print(f"  domains: {len(set(assign.values()))} subject areas")
+
     if conn is not None and args.describe:
         targets = profile.select_tables_to_profile(catalog, limit=args.describe_limit)
         ok = 0
@@ -77,9 +89,11 @@ def _run_pipeline(catalog, conn, args) -> None:
     json_path = _write(args.out, "catalog.json", render.to_json(catalog))
     md_path = _write(args.out, "catalog.md", render.to_markdown(catalog))
     mmd_path = _write(args.out, "erd.mmd", render.to_mermaid(catalog, max_tables=args.erd_tables))
+    html_path = _write(args.out, "catalog.html", htmlreport.render_html(catalog))
     print(f"  wrote {json_path}")
     print(f"  wrote {md_path}")
     print(f"  wrote {mmd_path}")
+    print(f"  wrote {html_path}  <- open this in a browser")
 
 
 def _connect(args):
@@ -118,6 +132,12 @@ def _add_common(p):
     p.add_argument("--model", default="qwen3:14b")
     p.add_argument("--ollama-host", default="http://localhost:11434")
     p.add_argument("--erd-tables", type=int, default=40, help="max tables in the ER diagram")
+    p.add_argument(
+        "--domains",
+        choices=["auto", "prefix", "components"],
+        default="auto",
+        help="how to group tables into subject areas (default: auto)",
+    )
 
 
 def main(argv=None) -> int:
