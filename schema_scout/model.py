@@ -26,7 +26,11 @@ class Column:
     is_identity: bool = False
     is_primary_key: bool = False
 
-    # --- profile (filled by the profile phase; all sample-based) ---
+    # --- profile (filled by the profile phase) ---
+    # profile_mode is "sampled" or "exact"; sampled_rows is the denominator the
+    # stats were computed over (the sample size, or the full row count in exact
+    # mode), so null_pct is meaningful either way.
+    profile_mode: Optional[str] = None
     sampled_rows: Optional[int] = None
     null_count: Optional[int] = None
     distinct_count: Optional[int] = None

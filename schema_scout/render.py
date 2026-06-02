@@ -20,6 +20,7 @@ def _col_json(c: Column) -> dict:
         "nullable": c.is_nullable,
         "primary_key": c.is_primary_key,
         "identity": c.is_identity,
+        "profile_mode": c.profile_mode,
         "null_pct": c.null_pct,
         "distinct_count": c.distinct_count,
         "sampled_rows": c.sampled_rows,
