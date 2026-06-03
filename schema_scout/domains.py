@@ -107,6 +107,7 @@ def summarize_domains(catalog: Catalog) -> list:
             "pii": 0,
             "inferred_fks": 0,
             "declared_fks": 0,
+            "queries": 0,
             "kinds": defaultdict(int),
         }
     )
@@ -117,6 +118,7 @@ def summarize_domains(catalog: Catalog) -> list:
         d["tables"] += 1
         d["rows"] += t.row_count
         d["columns"] += t.column_count
+        d["queries"] += t.query_count
         d["kinds"][t.kind] += 1
         for c in t.columns:
             if c.is_pii:

@@ -110,6 +110,10 @@ class Table:
     subject_area: Optional[str] = None
     description: Optional[str] = None
 
+    # usage phase (from query history; 0 when not collected)
+    usage_score: float = 0.0  # sum of executions of queries referencing this table
+    query_count: int = 0  # number of distinct queries referencing this table
+
     @property
     def qualified_name(self) -> str:
         return f"{self.schema}.{self.name}"

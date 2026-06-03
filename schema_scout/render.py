@@ -51,6 +51,8 @@ def _table_json(t: Table) -> dict:
         "kind": t.kind,
         "subject_area": t.subject_area,
         "row_count": t.row_count,
+        "usage_score": t.usage_score,
+        "query_count": t.query_count,
         "primary_key": t.primary_key,
         "description": t.description,
         "columns": [_col_json(c) for c in t.columns],
