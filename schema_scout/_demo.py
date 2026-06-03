@@ -62,6 +62,9 @@ def build_demo_catalog() -> Catalog:
         _col("dbo", "customers", "city", 4, "nvarchar",
              mode="sampled", rows=1200, nulls=18, distinct=214,
              samples=["Leeds", "Hull", "Manchester", "Newcastle"]),
+        # constant column -> a health finding
+        _col("dbo", "customers", "record_status", 5, "nvarchar",
+             mode="sampled", rows=1200, nulls=0, distinct=1, samples=["active"]),
     ]
 
     products = Table(schema="dbo", name="products", row_count=340, primary_key=["id"])
@@ -91,6 +94,9 @@ def build_demo_catalog() -> Catalog:
         _col("dbo", "orders", "order_date", 5, "date",
              mode="sampled", rows=50000, nulls=0, distinct=731,
              vmin="2024-06-01", vmax="2026-05-31"),
+        # legacy column nobody populates -> an all-null health finding
+        _col("dbo", "orders", "legacy_ref", 6, "nvarchar",
+             mode="sampled", rows=50000, nulls=50000, distinct=0),
     ]
     # one declared FK so the demo shows declared + inferred side by side
     orders.foreign_keys = [
