@@ -74,7 +74,7 @@ def to_json(catalog: Catalog, indent: int = 2) -> str:
 
 # --- Markdown ------------------------------------------------------------
 
-def to_markdown(catalog: Catalog) -> str:
+def to_markdown(catalog: Catalog, findings: list | None = None) -> str:
     tables = sorted(catalog.tables, key=lambda t: t.row_count, reverse=True)
     n_inf = sum(1 for fk in catalog.relationships if fk.inferred)
     pii_cols = [
@@ -129,6 +129,16 @@ def to_markdown(catalog: Catalog) -> str:
         out.append("|---|---|---|")
         for tbl, col, kind in pii_cols:
             out.append(f"| `{tbl}` | `{col}` | {kind} |")
+        out.append("")
+
+    # health findings (structural + data-quality), if provided
+    if findings:
+        out.append("## Health")
+        out.append("")
+        out.append("| Severity | Table | Issue |")
+        out.append("|---|---|---|")
+        for f in findings:
+            out.append(f"| {f['severity']} | `{f['table']}` | {f['message']} |")
         out.append("")
 
     # per-table detail
