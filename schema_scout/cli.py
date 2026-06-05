@@ -24,12 +24,16 @@ import sys
 from schema_scout import (
     classify,
     domains,
+    exports,
     extract,
     htmlreport,
+    lint,
+    paths,
     profile,
     relationships,
     render,
     semantic,
+    usage,
 )
 
 
@@ -70,6 +74,15 @@ def _run_pipeline(catalog, conn, args) -> None:
         scope = "key columns" if keys_only else "all columns"
         print(f"  exact-profiled {len(done)} tables ({scope}, full row counts)")
 
+    if conn is not None and args.usage:
+        try:
+            activity = usage.extract_query_activity(conn)
+            usage.score_usage(catalog, activity)
+            ranked = sum(1 for t in catalog.tables if t.query_count)
+            print(f"  usage: scored {ranked} tables from {len(activity)} queries")
+        except Exception as exc:  # noqa: BLE001 - usage needs extra perms; never fail the run
+            print(f"  usage: skipped ({exc})")
+
     flagged = classify.annotate_pii(catalog)
     summary = classify.classify_catalog(catalog)
     print(f"  classified: {summary}")
@@ -77,6 +90,17 @@ def _run_pipeline(catalog, conn, args) -> None:
 
     assign = domains.infer_domains(catalog, strategy=args.domains)
     print(f"  domains: {len(set(assign.values()))} subject areas")
+
+    findings = lint.lint_catalog(catalog)
+    print(f"  health: {lint.summarize_lint(findings)}")
+
+    if args.path:
+        try:
+            src, dst = [p.strip() for p in args.path.split(",", 1)]
+            print(f"  join path {src} -> {dst}:")
+            print("    " + paths.path_to_text(paths.find_path(catalog, src, dst), src, dst).replace("\n", "\n    "))
+        except ValueError:
+            print("  --path expects 'schema.from_table,schema.to_table'")
 
     if conn is not None and args.describe:
         targets = profile.select_tables_to_profile(catalog, limit=args.describe_limit)
@@ -87,12 +111,16 @@ def _run_pipeline(catalog, conn, args) -> None:
         print(f"  AI-described {ok}/{len(targets)} tables via {args.model}")
 
     json_path = _write(args.out, "catalog.json", render.to_json(catalog))
-    md_path = _write(args.out, "catalog.md", render.to_markdown(catalog))
+    md_path = _write(args.out, "catalog.md", render.to_markdown(catalog, findings=findings))
     mmd_path = _write(args.out, "erd.mmd", render.to_mermaid(catalog, max_tables=args.erd_tables))
-    html_path = _write(args.out, "catalog.html", htmlreport.render_html(catalog))
+    sql_path = _write(args.out, "relationships.sql", exports.to_sql_constraints(catalog))
+    dbt_path = _write(args.out, "dbt_relationships.yml", exports.to_dbt_relationships(catalog))
+    html_path = _write(args.out, "catalog.html", htmlreport.render_html(catalog, findings))
     print(f"  wrote {json_path}")
     print(f"  wrote {md_path}")
     print(f"  wrote {mmd_path}")
+    print(f"  wrote {sql_path}")
+    print(f"  wrote {dbt_path}")
     print(f"  wrote {html_path}  <- open this in a browser")
 
 
@@ -127,6 +155,16 @@ def _add_common(p):
         help="exact (full-table) profile of all aggregatable columns (heavy)",
     )
     p.add_argument("--validate", action="store_true", help="confirm inferred FKs by value inclusion")
+    p.add_argument(
+        "--usage",
+        action="store_true",
+        help="rank tables by query activity (Query Store / DMVs; needs permission)",
+    )
+    p.add_argument(
+        "--path",
+        metavar="FROM,TO",
+        help="print the join path between two tables, e.g. dbo.orders,dbo.customers",
+    )
     p.add_argument("--describe", action="store_true", help="AI descriptions via Ollama")
     p.add_argument("--describe-limit", type=int, default=25)
     p.add_argument("--model", default="qwen3:14b")
@@ -162,12 +200,13 @@ def main(argv=None) -> int:
 
         print("schema-scout demo (synthetic catalog, no database)")
         catalog = build_demo_catalog()
-        # demo has no live connection, so profiling/validate/describe are skipped
+        # demo has no live connection, so profiling/validate/describe/usage are skipped
         args.profile = False
         args.exact = False
         args.exact_keys = False
         args.validate = False
         args.describe = False
+        args.usage = False
         _run_pipeline(catalog, None, args)
         return 0
 
