@@ -31,6 +31,7 @@ from schema_scout import (
     lint,
     paths,
     profile,
+    readiness,
     relationships,
     render,
     semantic,
@@ -94,6 +95,9 @@ def _run_pipeline(catalog, conn, args) -> None:
 
     findings = lint.lint_catalog(catalog)
     print(f"  health: {lint.summarize_lint(findings)}")
+
+    score = readiness.compute_readiness(catalog, findings)
+    print(f"  AI readiness: {score['score']}/100 ({score['grade']} - {score['label']})")
 
     if args.path:
         try:

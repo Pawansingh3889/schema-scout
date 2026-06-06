@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import json
 
-from schema_scout import domains, lint, render
+from schema_scout import domains, lint, readiness, render
 from schema_scout.model import Catalog
 
 _TEMPLATE = r"""<!DOCTYPE html>
@@ -97,6 +97,20 @@ _TEMPLATE = r"""<!DOCTYPE html>
   #pathResult .step { padding:3px 0; }
   #pathResult .inf { color:var(--warn); }
   .muted { color:var(--muted); }
+  .readiness { display:flex; gap:28px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:18px 22px; align-items:center; flex-wrap:wrap; margin-bottom:8px; }
+  .rscore { text-align:center; min-width:120px; }
+  .rnum { font-size:46px; font-weight:800; line-height:1; }
+  .rnum .rmax { font-size:16px; color:var(--muted); font-weight:600; }
+  .rgrade { margin-top:8px; font-size:12px; font-weight:700; padding:3px 10px; border-radius:999px; display:inline-block; }
+  .grade-A, .grade-B { background:rgba(16,185,129,.18); color:#6ee7b7; }
+  .grade-C { background:rgba(245,158,11,.18); color:#fcd34d; }
+  .grade-D, .grade-F { background:rgba(239,68,68,.18); color:#fca5a5; }
+  .rbody { display:flex; gap:32px; flex:1; flex-wrap:wrap; }
+  .rbars { flex:1; min-width:240px; }
+  .rcomp { display:grid; grid-template-columns:120px 1fr 46px; gap:10px; align-items:center; font-size:12px; color:var(--muted); margin:6px 0; }
+  .rcomp .rval { text-align:right; color:var(--text); font-variant-numeric:tabular-nums; }
+  .recs { margin:0; padding-left:18px; font-size:13px; }
+  .recs li { margin:3px 0; }
   details > summary { cursor:pointer; color:var(--muted); font-size:13px; margin-bottom:10px; }
   footer { color:var(--muted); font-size:12px; padding:24px 32px; border-top:1px solid var(--line); }
 </style>
@@ -108,6 +122,9 @@ _TEMPLATE = r"""<!DOCTYPE html>
 </header>
 <div class="wrap">
   <div class="kpis" id="kpis"></div>
+
+  <h2>AI readiness <span class="hint">— how usable this schema is for an LLM / agent, and what to fix</span></h2>
+  <div class="readiness" id="readiness"></div>
 
   <h2>Where to focus <span class="hint">— domains ranked; sort by what matters, click a card to filter the tables below</span></h2>
   <div class="controls">
@@ -167,6 +184,7 @@ _TEMPLATE = r"""<!DOCTYPE html>
 const DATA = __DATA__;
 const DOMAINS = __DOMAINS__;
 const FINDINGS = __FINDINGS__;
+const READINESS = __READINESS__;
 const KIND_COLORS = {fact:"#3b82f6",dimension:"#10b981",bridge:"#a855f7",reference:"#64748b",unknown:"#9ca3af"};
 const fmt = n => (n==null?"":Number(n).toLocaleString());
 let activeDomain = "";
@@ -192,6 +210,22 @@ function renderKpis(){
   document.getElementById("kpis").innerHTML = tiles.map(t=>
     `<div class="kpi"><div class="n">${t.n}</div><div class="l">${t.l}</div>${t.sub?`<div class="sub">${t.sub}</div>`:""}</div>`
   ).join("");
+}
+
+function renderReadiness(){
+  const r = READINESS;
+  const bars = Object.keys(r.components).map(k => {
+    const v = r.components[k];
+    return `<div class="rcomp"><div>${k}</div><div class="bar"><span style="width:${v}%"></span></div><div class="rval">${v}%</div></div>`;
+  }).join("");
+  const recs = r.recommendations.length
+    ? `<ul class="recs">${r.recommendations.map(x=>`<li>${x}</li>`).join("")}</ul>`
+    : `<div class="muted">No blockers found.</div>`;
+  document.getElementById("readiness").innerHTML =
+    `<div class="rscore"><div class="rnum">${r.score}<span class="rmax">/100</span></div>`
+    + `<div class="rgrade grade-${r.grade}">${r.grade} · ${r.label}</div></div>`
+    + `<div class="rbody"><div class="rbars">${bars}</div>`
+    + `<div><div class="muted" style="margin-bottom:6px">To improve</div>${recs}</div></div>`;
 }
 
 function renderDomains(){
@@ -365,7 +399,7 @@ function init(){
   document.getElementById("domainFilter").innerHTML =
     `<option value="">All domains</option>` + DOMAINS.map(d=>`<option value="${d.name}">${d.name}</option>`).join("");
 
-  renderKpis(); renderDomains(); renderHealth(); renderRows();
+  renderKpis(); renderReadiness(); renderDomains(); renderHealth(); renderRows();
   document.getElementById("domainSort").onchange = renderDomains;
   ["search","kindFilter","piiOnly"].forEach(id=>document.getElementById(id).oninput = renderRows);
   document.getElementById("domainFilter").onchange = ()=>{ activeDomain=document.getElementById("domainFilter").value; renderDomains(); renderRows(); };
@@ -382,11 +416,14 @@ def render_html(catalog: Catalog, findings: list | None = None) -> str:
         findings = lint.lint_catalog(catalog)
     data = render.to_dict(catalog)
     doms = domains.summarize_domains(catalog)
+    ready = readiness.compute_readiness(catalog, findings)
     data_json = json.dumps(data, default=str).replace("</", "<\\/")
     doms_json = json.dumps(doms, default=str).replace("</", "<\\/")
     find_json = json.dumps(findings, default=str).replace("</", "<\\/")
+    ready_json = json.dumps(ready, default=str).replace("</", "<\\/")
     return (
         _TEMPLATE.replace("__DATA__", data_json)
         .replace("__DOMAINS__", doms_json)
         .replace("__FINDINGS__", find_json)
+        .replace("__READINESS__", ready_json)
     )
