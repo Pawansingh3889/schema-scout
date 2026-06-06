@@ -191,15 +191,16 @@ def main(argv=None) -> int:
     _add_common(p_run)
 
     p_demo = sub.add_parser("demo", help="run the pipeline on a synthetic catalog (no DB)")
+    p_demo.add_argument("--large", action="store_true", help="use a bigger ~30-table, multi-domain schema")
     _add_common(p_demo)
 
     args = parser.parse_args(argv)
 
     if args.cmd == "demo":
-        from schema_scout._demo import build_demo_catalog
+        from schema_scout._demo import build_demo_catalog, build_large_demo_catalog
 
         print("schema-scout demo (synthetic catalog, no database)")
-        catalog = build_demo_catalog()
+        catalog = build_large_demo_catalog() if args.large else build_demo_catalog()
         # demo has no live connection, so profiling/validate/describe/usage are skipped
         args.profile = False
         args.exact = False
