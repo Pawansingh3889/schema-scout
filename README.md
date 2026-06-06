@@ -17,7 +17,7 @@ is a map of what's in the database. This builds that map.
 
 ![The schema-scout dashboard mapping a 31-table database](docs/dashboard.png)
 
-*The offline dashboard: domains ranked by where to focus, a join-path finder, health flags, PII, and every table searchable. Synthetic demo data — generate it yourself with `python -m schema_scout.cli demo --large`.*
+*The offline dashboard (top section shown): domains ranked by where to focus, a join-path finder, health flags, PII, and every table searchable. Synthetic demo data — run `python -m schema_scout.cli demo --large` and open `out/catalog.html` for the full, scrollable view ([full screenshot](docs/dashboard_full.png)).*
 
 ## What you get
 
