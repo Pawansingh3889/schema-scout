@@ -28,6 +28,7 @@ is a map of what's in the database. This builds that map.
 - A **join-path finder** between any two tables
 - Sampled or exact **column profiling** (null %, cardinality, ranges, examples)
 - An offline **dashboard**, plus JSON, Markdown, a Mermaid ER diagram, an FK-constraint SQL script, and dbt relationship tests
+- An **agent-ready context file** — compact schema context (roles, join keys, PII) for an LLM doing natural-language-to-SQL
 - Optional **plain-English descriptions** from a local LLM, on-prem
 
 ## What it does
@@ -115,6 +116,7 @@ Output lands in `out/`:
 - `erd.mmd` — a Mermaid ER diagram (scoped to the biggest tables so it stays readable; raise `--erd-tables` or scope it yourself)
 - `relationships.sql` — a reviewable `ALTER TABLE … WITH NOCHECK ADD CONSTRAINT` script for the inferred (and declared) foreign keys, for a DBA to apply
 - `dbt_relationships.yml` — a dbt sources schema carrying `relationships` tests for every foreign key
+- `agent_context.json` — a compact, agent-ready description of the schema (table roles, descriptions, PII flags, and explicit join keys) for feeding an LLM doing natural-language-to-SQL
 
 ## The dashboard
 
