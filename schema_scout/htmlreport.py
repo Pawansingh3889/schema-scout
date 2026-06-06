@@ -48,11 +48,12 @@ _TEMPLATE = r"""<!DOCTYPE html>
   h2 { font-size:16px; margin:32px 0 14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
   h2 .hint { font-size:12px; color:var(--muted); font-weight:400; }
   .controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
-  select, input[type=search] {
+  select, input[type=search], input[list] {
     background:var(--panel2); color:var(--text); border:1px solid var(--line);
     border-radius:8px; padding:8px 10px; font-size:13px;
   }
   input[type=search] { min-width:240px; }
+  input[list] { min-width:230px; }
   button {
     background:var(--accent); color:#06283d; border:none; border-radius:8px;
     padding:8px 14px; font-size:13px; font-weight:700; cursor:pointer;
@@ -123,10 +124,11 @@ _TEMPLATE = r"""<!DOCTYPE html>
 
   <h2>Find a join path <span class="hint">— how do two tables connect?</span></h2>
   <div class="controls">
-    <select id="pathFrom"></select>
+    <input id="pathFrom" list="tableList" placeholder="from table…" autocomplete="off">
     <span class="muted">→</span>
-    <select id="pathTo"></select>
+    <input id="pathTo" list="tableList" placeholder="to table…" autocomplete="off">
     <button id="pathBtn">Find path</button>
+    <datalist id="tableList"></datalist>
   </div>
   <div id="pathResult" class="muted"></div>
 
@@ -355,10 +357,9 @@ function renderRows(){
 
 function init(){
   const tableNames = DATA.tables.map(t=>t.qualified_name).sort();
-  const opts = tableNames.map(n=>`<option value="${n}">${n}</option>`).join("");
-  document.getElementById("pathFrom").innerHTML = opts;
-  document.getElementById("pathTo").innerHTML = opts;
-  if(tableNames.length>1) document.getElementById("pathTo").selectedIndex = 1;
+  document.getElementById("tableList").innerHTML = tableNames.map(n=>`<option value="${n}"></option>`).join("");
+  if(tableNames.length) document.getElementById("pathFrom").value = tableNames[0];
+  if(tableNames.length>1) document.getElementById("pathTo").value = tableNames[1];
   document.getElementById("pathBtn").onclick = renderPath;
 
   document.getElementById("domainFilter").innerHTML =
