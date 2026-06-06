@@ -8,7 +8,7 @@ venv/
 .pytest_cache/
 
 # generated catalog artifacts
-out/
+out*/
 *.catalog.json
 *.erd.mmd
 catalog.md

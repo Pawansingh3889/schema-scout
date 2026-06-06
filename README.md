@@ -11,6 +11,10 @@ It exists because you cannot understand a few thousand columns by scrolling
 through SSMS, and because the first thing a natural-language-to-SQL tool needs
 is a map of what's in the database. This builds that map.
 
+![The schema-scout dashboard mapping a 31-table database](docs/dashboard.png)
+
+*The offline dashboard: domains ranked by where to focus, a join-path finder, health flags, PII, and every table searchable. Synthetic demo data — generate it yourself with `python -m schema_scout.cli demo --large`.*
+
 ## What it does
 
 The work is split into stages so each one scales on its own:
