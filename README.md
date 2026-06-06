@@ -25,6 +25,7 @@ is a map of what's in the database. This builds that map.
 - Tables classified (fact / dimension / bridge / reference) and grouped into **subject areas**
 - **PII flagged** by column name and sample values
 - A **health report**: no primary key, orphan tables, all-null / constant / mostly-null columns
+- An **AI-readiness score** (0–100) with a breakdown and concrete fixes — how usable the schema is for an LLM
 - A **join-path finder** between any two tables
 - Sampled or exact **column profiling** (null %, cardinality, ranges, examples)
 - An offline **dashboard**, plus JSON, Markdown, a Mermaid ER diagram, an FK-constraint SQL script, and dbt relationship tests

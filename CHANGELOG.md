@@ -7,6 +7,9 @@ semantic versioning.
 ## [Unreleased]
 
 ### Added
+- AI-readiness score (0–100) with a breakdown and fixes, shown on the dashboard and printed by the CLI
+- Agent-ready context export (`agent_context.json`) for feeding an LLM doing NL-to-SQL
+- Larger multi-domain demo schema (`demo --large`)
 - GitHub Actions CI (pytest on Python 3.10–3.13)
 - Docker image for running without a local Python setup
 - Contributing guide, changelog, issue templates, and a roadmap
