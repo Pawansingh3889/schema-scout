@@ -1,0 +1,9 @@
+.git
+.venv
+venv
+out*/
+docs/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
