@@ -1,5 +1,9 @@
 # schema-scout
 
+![CI](https://github.com/Pawansingh3889/schema-scout/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/python-3.10%E2%80%933.13-blue)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
+
 Point it at a SQL Server database with 150+ tables and get back a data
 catalog you can actually read: every table classified, the relationships
 mapped (including the ones nobody bothered to declare as foreign keys), PII
@@ -14,6 +18,17 @@ is a map of what's in the database. This builds that map.
 ![The schema-scout dashboard mapping a 31-table database](docs/dashboard.png)
 
 *The offline dashboard: domains ranked by where to focus, a join-path finder, health flags, PII, and every table searchable. Synthetic demo data — generate it yourself with `python -m schema_scout.cli demo --large`.*
+
+## What you get
+
+- A relationship map, including the **undeclared foreign keys** legacy schemas leave out
+- Tables classified (fact / dimension / bridge / reference) and grouped into **subject areas**
+- **PII flagged** by column name and sample values
+- A **health report**: no primary key, orphan tables, all-null / constant / mostly-null columns
+- A **join-path finder** between any two tables
+- Sampled or exact **column profiling** (null %, cardinality, ranges, examples)
+- An offline **dashboard**, plus JSON, Markdown, a Mermaid ER diagram, an FK-constraint SQL script, and dbt relationship tests
+- Optional **plain-English descriptions** from a local LLM, on-prem
 
 ## What it does
 
@@ -36,6 +51,11 @@ highest-value tables (most rows, most referenced) instead of all 150. When you
 need certainty rather than an estimate — for example to confirm a column is
 actually unique before trusting it as a key — `--exact-keys` runs full-table
 aggregates instead of sampling.
+
+```mermaid
+flowchart LR
+    E[extract] --> P[profile] --> I[infer] --> C[classify] --> D[domains] --> H[health] --> R[render]
+```
 
 ## Why the inference matters
 
@@ -152,6 +172,17 @@ The inference, classification, PII detection, health checks, join-path search,
 usage scoring, FK export, and rendering logic are all pure functions tested
 without a database. The demo schema includes a deliberately undeclared foreign
 key so the inference and join-path paths are exercised end to end.
+
+## Roadmap & future scope
+
+schema-scout is early and SQL Server only today. The headline next step is
+**support for more databases** (PostgreSQL and MySQL, then Snowflake/BigQuery)
+behind a small dialect layer, the change that opens it up to most teams. After
+that: publishing to PyPI, schema-change history (diff two runs over time),
+column-level lineage, a printable data dictionary, and more LLM providers for
+the descriptions step. The full plan is in [ROADMAP.md](ROADMAP.md).
+
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
