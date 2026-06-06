@@ -178,12 +178,15 @@ key so the inference and join-path paths are exercised end to end.
 
 ## Roadmap & future scope
 
-schema-scout is early and SQL Server only today. The headline next step is
-**support for more databases** (PostgreSQL and MySQL, then Snowflake/BigQuery)
-behind a small dialect layer, the change that opens it up to most teams. After
-that: publishing to PyPI, schema-change history (diff two runs over time),
-column-level lineage, a printable data dictionary, and more LLM providers for
-the descriptions step. The full plan is in [ROADMAP.md](ROADMAP.md).
+The core stays free, open source, and on-prem. Near-term, on-prem first:
+**PostgreSQL and MySQL** support behind a small dialect layer, an **MCP server**
+so agents can query the catalog live, and a PyPI release.
+
+Optional **cloud integrations** are future scope for teams already on those
+platforms — a **Snowflake** (and BigQuery / Databricks) connector, deeper
+**dbt** integration, an opt-in **Snowflake Cortex** describe path, and catalog
+export to OpenMetadata / DataHub. These are always opt-in; the default run never
+leaves your machine. Full plan in [ROADMAP.md](ROADMAP.md).
 
 Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
