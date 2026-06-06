@@ -22,6 +22,7 @@ import os
 import sys
 
 from schema_scout import (
+    agentcontext,
     classify,
     domains,
     exports,
@@ -115,12 +116,14 @@ def _run_pipeline(catalog, conn, args) -> None:
     mmd_path = _write(args.out, "erd.mmd", render.to_mermaid(catalog, max_tables=args.erd_tables))
     sql_path = _write(args.out, "relationships.sql", exports.to_sql_constraints(catalog))
     dbt_path = _write(args.out, "dbt_relationships.yml", exports.to_dbt_relationships(catalog))
+    agent_path = _write(args.out, "agent_context.json", agentcontext.to_agent_json(catalog))
     html_path = _write(args.out, "catalog.html", htmlreport.render_html(catalog, findings))
     print(f"  wrote {json_path}")
     print(f"  wrote {md_path}")
     print(f"  wrote {mmd_path}")
     print(f"  wrote {sql_path}")
     print(f"  wrote {dbt_path}")
+    print(f"  wrote {agent_path}")
     print(f"  wrote {html_path}  <- open this in a browser")
 
 
