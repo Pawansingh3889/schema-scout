@@ -188,8 +188,17 @@ platforms — a **Snowflake** (and BigQuery / Databricks) connector, deeper
 export to OpenMetadata / DataHub. These are always opt-in; the default run never
 leaves your machine. Full plan in [ROADMAP.md](ROADMAP.md).
 
-Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+## Contributing
+
+Contributions are very welcome — this is a small, friendly codebase to start in.
+
+- Browse the [**good first issue**](https://github.com/Pawansingh3889/schema-scout/labels/good%20first%20issue) label for a starting point.
+- [CONTRIBUTING.md](CONTRIBUTING.md) covers setup and how the code is laid out (each stage is its own module; the logic that doesn't need a database is kept pure and tested).
+- Be kind — see the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+The easiest wins are a new PII pattern, a new health check, or a new output
+format — each is a pure function with an existing test to copy.
 
 ## License
 
-MIT.
+[MIT](LICENSE).
