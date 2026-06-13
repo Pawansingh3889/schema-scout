@@ -7,7 +7,9 @@ semantic versioning.
 ## [Unreleased]
 
 ### Added
-- AI-readiness score (0–100) with a breakdown and fixes, shown on the dashboard and printed by the CLI
+- MCP server (`schema-scout-mcp`) so an AI agent can query the catalog live (list/describe tables, find join paths, search, get agent context) — read-only, on-prem
+- Catalog loader that reads a generated `catalog.json` back into the model
+- Agentic-readiness score (0–100) with a breakdown and fixes, shown on the dashboard and printed by the CLI
 - Agent-ready context export (`agent_context.json`) for feeding an LLM doing NL-to-SQL
 - Larger multi-domain demo schema (`demo --large`)
 - GitHub Actions CI (pytest on Python 3.10–3.13)

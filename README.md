@@ -32,6 +32,7 @@ and score whether it's actually ready. ([Why this matters for agentic AI →](do
 - Sampled or exact **column profiling** (null %, cardinality, ranges, examples)
 - An offline **dashboard**, plus JSON, Markdown, a Mermaid ER diagram, an FK-constraint SQL script, and dbt relationship tests
 - An **agent-ready context file** — compact schema context (roles, join keys, PII) for an LLM doing natural-language-to-SQL
+- An **MCP server** so an AI agent can query the catalog live (list tables, find join paths, get context) — read-only, on-prem
 - Optional **plain-English descriptions** from a local LLM, on-prem
 
 ## What it does
@@ -159,6 +160,22 @@ classification, it's a heuristic starting point — rename or merge as needed.
 - `--describe` / `--model` / `--ollama-host` — local-LLM descriptions via Ollama
 - `--erd-tables N` — how many tables to draw in the diagram
 - `--domains auto|prefix|components` — how to group tables into subject areas
+
+## MCP server (let an agent query the catalog)
+
+Large schemas don't fit in a prompt. Instead of pasting 150 tables at an agent,
+run schema-scout's MCP server and let the agent ask for exactly what it needs:
+
+```bash
+pip install "schema-scout[mcp]"
+schema-scout-mcp --catalog out/catalog.json
+```
+
+It exposes read-only tools over the Model Context Protocol — `list_domains`,
+`list_tables`, `describe_table`, `find_join_path`, `search`, and
+`agent_context` — to any MCP-aware client (Claude Desktop, Cursor, and others).
+It serves a generated catalog file, so nothing touches the database at serve
+time.
 
 ## Read-only, on purpose
 
