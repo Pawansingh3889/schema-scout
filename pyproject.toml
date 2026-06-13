@@ -25,10 +25,12 @@ dependencies = [
 
 [project.optional-dependencies]
 ai = ["requests>=2.31"]
+mcp = ["mcp>=1.0"]
 dev = ["pytest>=8.0"]
 
 [project.scripts]
 schema-scout = "schema_scout.cli:main"
+schema-scout-mcp = "schema_scout.mcp_server:main"
 
 [project.urls]
 Homepage = "https://github.com/Pawansingh3889/schema-scout"
