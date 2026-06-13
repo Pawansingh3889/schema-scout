@@ -11,9 +11,11 @@ flagged, a health report, an ER diagram, and an interactive offline dashboard
 to explore it all. Optionally, plain-English descriptions written by a local
 LLM so nothing about your schema leaves the machine.
 
-It exists because you cannot understand a few thousand columns by scrolling
-through SSMS, and because the first thing a natural-language-to-SQL tool needs
-is a map of what's in the database. This builds that map.
+It exists for a simple reason: you can't point an AI agent — or a new analyst —
+at a database nobody has mapped. The 2026 agentic-AI reports keep landing on the
+same blocker (data foundations and governance, not the model), and this tackles
+the first step: map the schema, recover the hidden relationships, flag the PII,
+and score whether it's actually ready. ([Why this matters for agentic AI →](docs/agentic-ai-readiness.md))
 
 ![The schema-scout dashboard mapping a 31-table database](docs/dashboard.png)
 
@@ -25,7 +27,7 @@ is a map of what's in the database. This builds that map.
 - Tables classified (fact / dimension / bridge / reference) and grouped into **subject areas**
 - **PII flagged** by column name and sample values
 - A **health report**: no primary key, orphan tables, all-null / constant / mostly-null columns
-- An **AI-readiness score** (0–100) with a breakdown and concrete fixes — how usable the schema is for an LLM
+- An **agentic-readiness score** (0–100) — how ready the schema is for AI agents, with a breakdown and concrete fixes
 - A **join-path finder** between any two tables
 - Sampled or exact **column profiling** (null %, cardinality, ranges, examples)
 - An offline **dashboard**, plus JSON, Markdown, a Mermaid ER diagram, an FK-constraint SQL script, and dbt relationship tests
