@@ -123,7 +123,7 @@ _TEMPLATE = r"""<!DOCTYPE html>
 <div class="wrap">
   <div class="kpis" id="kpis"></div>
 
-  <h2>AI readiness <span class="hint">— how usable this schema is for an LLM / agent, and what to fix</span></h2>
+  <h2>Agentic readiness <span class="hint">— how ready this schema is for AI agents, and what to fix</span></h2>
   <div class="readiness" id="readiness"></div>
 
   <h2>Where to focus <span class="hint">— domains ranked; sort by what matters, click a card to filter the tables below</span></h2>

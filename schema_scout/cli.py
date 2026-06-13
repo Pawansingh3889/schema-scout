@@ -97,7 +97,7 @@ def _run_pipeline(catalog, conn, args) -> None:
     print(f"  health: {lint.summarize_lint(findings)}")
 
     score = readiness.compute_readiness(catalog, findings)
-    print(f"  AI readiness: {score['score']}/100 ({score['grade']} - {score['label']})")
+    print(f"  agentic readiness: {score['score']}/100 ({score['grade']} - {score['label']})")
 
     if args.path:
         try:
