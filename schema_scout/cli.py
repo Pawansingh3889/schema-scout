@@ -201,6 +201,11 @@ def main(argv=None) -> int:
     p_demo.add_argument("--large", action="store_true", help="use a bigger ~30-table, multi-domain schema")
     _add_common(p_demo)
 
+    p_diff = sub.add_parser("diff", help="compare two saved catalog.json snapshots for drift")
+    p_diff.add_argument("old", help="path to the earlier catalog.json")
+    p_diff.add_argument("new", help="path to the later catalog.json")
+    p_diff.add_argument("--json", action="store_true", help="emit the diff as JSON")
+
     args = parser.parse_args(argv)
 
     if args.cmd == "demo":
@@ -226,6 +231,21 @@ def main(argv=None) -> int:
         print(f"  {len(catalog.tables)} tables, {len(catalog.relationships)} declared FKs")
         _run_pipeline(catalog, conn, args)
         conn.close()
+        return 0
+
+    if args.cmd == "diff":
+        import json as _json
+
+        from schema_scout import catalog_io
+        from schema_scout import diff as diffmod
+
+        result = diffmod.diff_catalogs(
+            catalog_io.load_catalog(args.old), catalog_io.load_catalog(args.new)
+        )
+        if args.json:
+            print(_json.dumps(result, indent=2))
+        else:
+            print(diffmod.format_diff(result))
         return 0
 
     return 1
