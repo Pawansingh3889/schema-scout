@@ -112,6 +112,15 @@ set SCHEMA_SCOUT_CONN=DRIVER={ODBC Driver 18 for SQL Server};SERVER=...;DATABASE
 python -m schema_scout.cli run
 ```
 
+### Track drift between scans
+
+A catalog is a snapshot, and databases move. Keep the `catalog.json` from each run (point `--out` somewhere dated), then compare two of them to see what changed — tables and columns added or dropped, type changes, large row-count shifts, and how the readiness score moved:
+
+```bash
+python -m schema_scout.cli diff old/catalog.json new/catalog.json
+python -m schema_scout.cli diff old/catalog.json new/catalog.json --json   # machine-readable
+```
+
 Output lands in `out/`:
 
 - `catalog.html` — a self-contained dashboard (see below); double-click to open
