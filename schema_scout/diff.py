@@ -1,11 +1,10 @@
 """Compare two catalog snapshots and report what changed (schema / data drift).
 
-The rest of schema-scout produces a one-off picture of a database. Real
-databases move: columns get added, types change, tables grow or empty out, and
-a readiness score taken three months ago goes stale. ``diff_catalogs`` takes
-two saved catalogs (an earlier one and a later one) and reports the
-differences, including the change in the readiness score, so a re-scan surfaces
-drift instead of going quiet.
+schema-scout produces a one-off picture of a database. Databases change over
+time: columns get added, types change, tables grow or empty out, and an old
+readiness score stops matching reality. ``diff_catalogs`` takes two saved
+catalogs (older and newer) and reports the differences, including the change in
+the readiness score.
 
 Pure function over two in-memory ``Catalog`` objects, so it's testable without
 a database. Load saved snapshots with ``catalog_io.load_catalog`` and pass them

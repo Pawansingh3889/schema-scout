@@ -114,7 +114,7 @@ python -m schema_scout.cli run
 
 ### Track drift between scans
 
-A catalog is a snapshot, and databases move. Keep the `catalog.json` from each run (point `--out` somewhere dated), then compare two of them to see what changed — tables and columns added or dropped, type changes, large row-count shifts, and how the readiness score moved:
+A catalog is a snapshot, and databases move. Keep the `catalog.json` from each run (point `--out` somewhere dated), then compare two of them. `diff` lists what changed: tables and columns added or dropped, type changes, big row-count shifts, and how the readiness score moved:
 
 ```bash
 python -m schema_scout.cli diff old/catalog.json new/catalog.json
