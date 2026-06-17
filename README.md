@@ -4,6 +4,8 @@
 ![Python](https://img.shields.io/badge/python-3.10%E2%80%933.13-blue)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
+> Part of the [Governed Agent Stack](https://github.com/Pawansingh3889/governed-agent-stack): free, on-prem building blocks for an AI agent you can point at a real database and audit.
+
 Point it at a SQL Server database with 150+ tables and get back a data
 catalog you can actually read: every table classified, the relationships
 mapped (including the ones nobody bothered to declare as foreign keys), PII
