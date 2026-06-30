@@ -1,6 +1,6 @@
 """Render a catalog to JSON, Markdown, and a Mermaid ER diagram.
 
-JSON is the machine-readable artifact (and the shape OpsMind's retriever can
+JSON is the machine-readable artifact (and the shape an agent's retriever can
 index). Markdown is the human catalog. Mermaid is the visual map — with 150
 tables the full diagram is unreadable, so ``to_mermaid`` can be scoped to a
 subject area or a subset of tables.
