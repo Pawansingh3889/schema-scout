@@ -1,5 +1,7 @@
 # schema-scout
 
+[![PyPI](https://img.shields.io/pypi/v/schema-scout)](https://pypi.org/project/schema-scout/) [![Downloads](https://static.pepy.tech/badge/schema-scout)](https://pepy.tech/projects/schema-scout)
+
 ![CI](https://github.com/Pawansingh3889/schema-scout/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.10%E2%80%933.13-blue)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
