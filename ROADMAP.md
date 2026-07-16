@@ -39,6 +39,10 @@ The biggest one first.
 - A printable data dictionary (PDF) and a CSV/Excel column inventory for
   non-technical stakeholders.
 - Column-level lineage from view and query-text analysis.
+- PII scoring and anonymization: distribution-based column scoring (so a
+  product name that collides with a surname is not flagged), a quasi-identifier
+  and k-anonymity table pass for the mosaic effect, and a greedy generalization
+  suggester. Design in [docs/pii-anonymization-design.md](docs/pii-anonymization-design.md).
 - More LLM providers for the descriptions step, not just Ollama.
 - Deeper dbt integration and an OpenMetadata export.
 - Custom, pluggable inference and classification rules.
